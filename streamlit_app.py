@@ -72,9 +72,14 @@ if prompt and prompt.strip():
         chat["title"] = f"{title[:40]}..." if len(title) > 40 else title
     try:
         with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                chat_bot.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)
+            ai_message = st.write_stream(
+                message_chunk.content
+                for message_chunk, _metadata in chat_bot.stream(
+                    {"messages": [HumanMessage(content=prompt)]}, config=config,
+                    stream_mode="messages",
+                )
+                if isinstance(message_chunk.content, str) and message_chunk.content
+            )
         chat["updated_at"] = datetime.now(timezone.utc).isoformat()
-        st.rerun()
     except Exception as error:
         st.error(f"Chat failed: {error}")
