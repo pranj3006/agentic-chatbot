@@ -13,6 +13,13 @@ def load_chat_sessions() -> dict[str, dict[str, str]]:
     sessions = {}
     for chat_id in get_all_threads():
         config = {"configurable": {"thread_id": chat_id}}
+        config = {
+            "configurable": {"thread_id": chat_id},
+            "metadata":{
+                "thread_id": chat_id
+            },
+            "run_name":"chat_trace"
+        }
         snapshot = chat_bot.get_state(config)
         messages = snapshot.values.get("messages", []) if snapshot.values else []
         first_user_message = next(
@@ -76,6 +83,13 @@ with st.sidebar:
 
 active_chat_id = st.session_state.active_chat_id
 config = {"configurable": {"thread_id": active_chat_id}}
+config = {
+            "configurable": {"thread_id": active_chat_id},
+            "metadata":{
+                "thread_id": active_chat_id
+            },
+            "run_name":"chat_trace"
+        }
 snapshot = chat_bot.get_state(config)
 messages = snapshot.values.get("messages", []) if snapshot.values else []
 
